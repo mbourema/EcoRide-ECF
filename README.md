@@ -104,3 +104,43 @@ Configuration des règles CORS dans le fichier config/packages/nelmio_cors.yaml.
 Installation de AWS SDK :
 npm install aws-sdk  # Installation du SDK AWS côté Node.js
 composer require aws/aws-sdk-php  # Installation du SDK AWS côté PHP
+
+# Deploiement en local
+
+L'api est disponible dans le repository mbourema/EcoRide-BackEnd: Back end de l'application web EcoRide. Il faut disposer d'un serveur comme apache,
+d'une version de php récente, de symfony cli et d'une base de donnée mysql et mongo db. En se rendant dans le dossier symfony, il faut exécuter la
+commande symfony server:start -d afin de lancer le serveur et la documentation de l'api sera disponible en locale en entrant /api/doc après l'adresse
+du serveur dans un navigateur. Les routes sont toutes utilisables et commentée, mais certaines nécessitent une authentification à l'aide de l'api token
+retrouvé dans la table utilisateur pour un utilisateur ayant un role correspondant. Les authentifications peuvent être modifiée dans config/package/security.yaml.
+Il faut afin de pouvoir utiliser les différentes route, creer la base de données EcoRide, faire les migrations et exécuter les commande SQL suivantes dans
+la base de données mySQL : 
+-- Requetes d'insertion pour la table Role
+
+INSERT INTO role (libelle) VALUES ('ROLE_ADMIN'); 
+INSERT INTO role (libelle) VALUES ('ROLE_EMPLOYE');
+INSERT INTO role (libelle) VALUES ('ROLE_CONDUCTEUR');
+INSERT INTO role (libelle) VALUES ('ROLE_PASSAGER');
+
+-- Requetes d'insertion pour la table Marque
+
+INSERT INTO marque (libelle) VALUES ('Alfa Romeo'); 
+INSERT INTO marque (libelle) VALUES ('Audi');
+INSERT INTO marque (libelle) VALUES ('BMW');
+INSERT INTO marque (libelle) VALUES ('Dacia');
+INSERT INTO marque (libelle) VALUES ('Fiat'); 
+INSERT INTO marque (libelle) VALUES ('Peugeot');
+INSERT INTO marque (libelle) VALUES ('Renault');
+INSERT INTO marque (libelle) VALUES ('Volkswagen');
+INSERT INTO marque (libelle) VALUES ('Mercedes'); 
+INSERT INTO marque (libelle) VALUES ('Ford');
+INSERT INTO marque (libelle) VALUES ('Nissan');
+INSERT INTO marque (libelle) VALUES ('Opel');
+INSERT INTO marque (libelle) VALUES ('Volvo');
+
+celà va remplir les tables Marque et Role qui sont essentielles à l'initialisation d'enregistrements dans les autres tables ainsi que pour le fonctionnement du front.
+
+Le front end est disponible à : mbourema/EcoRide-FrontEnd: Front end de l'application web EcoRide. L'extension Live server de visual studio code ne permet pas de charger
+le système de routage qu'il comporte. L'utilisation de : npm install -g http-server permet d'actionner le système de routage en locale. Enfin il est nécessaire de réaliser
+les installations suivantes :
+npm install bootstrap  # Installation de Bootstrap
+npm i bootstrap-icons  # Installation des icônes Bootstrap

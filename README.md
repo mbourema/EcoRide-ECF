@@ -65,6 +65,8 @@ Assure une base propre avant de recréer les entités et migrations.
 
 Permet de synchroniser les schémas de base de données avec le code.
 
+php bin/console cache:clear # A effectuer après un changement dans les controlleur ou les fichier de config pour être sur d'appliquer le schangements à l'API
+
 # Sécurité et authentification
 Ajout du composant Security de Symfony et gestion des rôles utilisateur :
 

@@ -1,3 +1,5 @@
+### Application déployée : https://ecoridespaacetree.alwaysdata.net/
+
 # 1. Installation et configuration de Symfony
 L’installation de Symfony a été réalisée en utilisant Symfony CLI et Composer pour garantir un environnement propre et fonctionnel :
 
@@ -202,3 +204,53 @@ npm i bootstrap-icons  # Installation des icônes Bootstrap
 Ensuite ce rendre dans le dossier et entrer la commande http-server -c-1 --gzip --proxy http://localhost:8080?/, l'application web est alors accessible en local via : http://localhost:8080?/
 
 Faire attention a renseigner la bonne valeur de d'adresse pour le serveur local qui héberge l'API dans le fichier JS/index.js ! export const apiUrl = {votre adresse de serveur}
+
+# Deploiment en ligne
+
+Installation du CLI heroku.
+
+heroku login #connexion
+
+php -v
+composer -v
+git --version # Checker le set up nécessaire
+
+heroku create # Creation de l'appli heroku pour recevoir le code source
+
+git push heroku main #Pousser l'application vers l'app heroku 
+
+heroku open # visualiser l'appli a l'url générée
+
+heroku addons:create jawsdb:kitefin --app <nom de l'app> #Ajouter l'addons jawsdb pour déployer une base de données mysql
+
+heroku config:get JAWSDB_URL --app <nom de l'app> #Recupérer les informations de connection
+
+Ensuite changer la variable DATABASE_URL dans Symfony, dans le fichier .env ou config/packages/doctrine.yaml ou .env.local (selon ou elle est définie)
+
+mysqldump -u root -p ecoride > ecoride.sql #Exporter la base de donnée ecoride mysql en local dans un fichier SQL (changer USE Ecoride; pour USE <nom de la base de données déployée sur Heroku)
+
+mysql -h -u -p database < ecoride.sql #Importer le fichier dans la base de donnée mysql déployée sur heroku
+
+Pour la base de donnée mongodb créer une base MongoDB sur MongoDB Atlas.
+
+Creer un cluster, ajouter un utilisateur et un mot de passe, récupérer l'url de connexion
+
+heroku config:set MONGODB_URI="url avec nom et mot de passe"
+
+Changer les connexions MongoDB dans symfony (.env.local config/package/doctrine_mongodb.yaml...)
+
+Permettre dans mongo atlas d'autoriser les adresses IP à ce connecter à la base de données
+
+Déployer le front :
+
+Hébergeur utilisé : Always data avec FileZilla pour le protocole FTP
+
+Prérequis : modifier dans le fichier index.js la variable "const apiUrl" selon la nouvelle url de l'API déployée via Heroku.
+
+Configurer le routage du serveur pour utiliser le notre dans l'encadrer "Configuration avancée" lors de la création d'un nouveau site sur AlwaysData :
+RewriteEngine On
+RewriteRule ^/[a-zA-Z0-9]+[/]?$ /index.html [QSA,L]
+
+symfony/config/packages/nelmio_cors.yaml : donner les autorisations CORS au front déployé sur always data.
+
+

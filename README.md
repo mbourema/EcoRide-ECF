@@ -2,7 +2,7 @@
 ### BackEnd de l'application : https://github.com/mbourema/EcoRide-BackEnd
 ### FrontEnd de l'application : https://github.com/mbourema/EcoRide-FrontEnd
 
-# 1. Installation et configuration de Symfony
+# Installation et configuration de Symfony
 L’installation de Symfony a été réalisée en utilisant Symfony CLI et Composer pour garantir un environnement propre et fonctionnel :
 
 scoop install symfony-cli  # Installation de Symfony CLI

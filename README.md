@@ -1,4 +1,4 @@
-### Application déployée : https://ecoridespaacetree.alwaysdata.net/
+### Application déployée : https://ecoridespaacetree.netlify.app
 ### BackEnd de l'application : https://github.com/mbourema/EcoRide-BackEnd
 ### FrontEnd de l'application : https://github.com/mbourema/EcoRide-FrontEnd
 
@@ -45,9 +45,9 @@ Facilite la gestion des versions séparées tout en maintenant un repository glo
 
 Ajout des URLs des bases de données MariaDB et MongoDB dans les fichiers .env et .env.local.
 
-.env stocke les variables d’environnement pour la configuration dynamique.
+.env : Paramètres généraux (souvent utilisés en production).
 
-Séparation entre développement et production via .env.local.
+.env.local : Configuration spécifique à l'environnement local (base de données locale, etc.).
 
 # Gestion des migrations et des schémas de base de données
 
@@ -69,7 +69,7 @@ Assure une base propre avant de recréer les entités et migrations.
 
 Permet de synchroniser les schémas de base de données avec le code.
 
-php bin/console cache:clear # A effectuer après un changement dans les controlleur ou les fichier de config pour être sur d'appliquer le schangements à l'API
+php bin/console cache:clear # A effectuer après un changement dans les controlleur ou les fichier de config pour être sur d'appliquer le changements à l'API
 
 # Sécurité et authentification
 Ajout du composant Security de Symfony et gestion des rôles utilisateur :
@@ -78,7 +78,7 @@ composer require symfony/security-bundle  # Installation du composant de sécuri
 
 composer require lexik/jwt-authentication-bundle  # Gestion des tokens JWT
 
-Security Bundle permet de gérer l’authentification et les permissions pour effectuer des requêtes sur certaines routes (permissions définis dans symfiny/config/packages).
+Security Bundle permet de gérer l’authentification et les permissions pour effectuer des requêtes sur certaines routes (permissions définis dans symfony/config/packages).
 
 JWT (JSON Web Token) est utilisé pour sécuriser les échanges entre le client et l’API.
 
@@ -163,12 +163,7 @@ L'api est disponible dans le repository mbourema/EcoRide-BackEnd: Back end de l'
 
 Il faut disposer d'un serveur comme apache, d'une version de php récente (PHP 8.2.12 a été utilisé), de Symfony CLI (version 5.10.6 utilisée) et d'une base de donnée mysql et mongodb (configurer les url dans .env.local).
 
-En se rendant dans le dossier symfony, il faut exécuter la commande symfony server:start -d afin de lancer le serveur en arrière plan (terminal toujours utilisable) et la documentation de l'api sera disponible en locale en entrant /api/doc après l'adresse
-
-du serveur local dans un navigateur. Les routes sont toutes utilisables et commentée, mais certaines nécessitent une authentification à l'aide de l'api token retrouvé dans la table utilisateur pour un utilisateur ayant un role correspondant (tout les roles
-
-sont accessible lors de la création d'un nouvel utilisateur (voir identifiant dans la table role). Il faut afin de pouvoir utiliser les différentes routes, creer la base de données EcoRide, faire les migrations et exécuter les commande SQL suivantes dans
-la base de données mySQL :
+En se rendant dans le dossier symfony, il faut exécuter la commande symfony server:start -d afin de lancer le serveur en arrière plan (terminal toujours utilisable) et la documentation de l'api sera disponible en locale en entrant /api/doc après l'adressev du serveur local dans un navigateur. Les routes sont toutes utilisables et commentée, mais certaines nécessitent une authentification à l'aide de l'api token retrouvé dans la table utilisateur pour un utilisateur ayant un role correspondant (tout les roles sont accessibles lors de la création d'un nouvel utilisateur (voir identifiant dans la table role). Il faut afin de pouvoir utiliser les différentes routes, creer la base de données EcoRide, faire les migrations et exécuter les commande SQL suivantes dans la base de données mySQL :
 
 -- Requetes d'insertion pour la table Role
 
@@ -239,13 +234,13 @@ Creer un cluster, ajouter un utilisateur et un mot de passe, récupérer l'url d
 
 heroku config:set MONGODB_URI="url avec nom et mot de passe"
 
-Changer les connexions MongoDB dans symfony (.env.local config/package/doctrine_mongodb.yaml...)
+Changer les connexions MongoDB dans symfony (config/package/doctrine_mongodb.yaml...)
 
 Permettre dans mongo atlas d'autoriser les adresses IP à ce connecter à la base de données
 
 Déployer le front :
 
-Hébergeur utilisé : Always data avec FileZilla pour le protocole FTP
+Hébergeur utilisé : Always data avec FileZilla pour le protocole FTP puis Netlify
 
 Prérequis : modifier dans le fichier index.js la variable "const apiUrl" selon la nouvelle url de l'API déployée via Heroku.
 
@@ -253,6 +248,16 @@ Configurer le routage du serveur pour utiliser le notre dans l'encadrer "Configu
 RewriteEngine On
 RewriteRule ^/[a-zA-Z0-9]+[/]?$ /index.html [QSA,L]
 
-symfony/config/packages/nelmio_cors.yaml : donner les autorisations CORS au front déployé sur always data.
+Pour Netlify création d'un fichier dans le front : _redirect, qui contient : /*    /index.html   200, afin de rediriger toutes les pages vers index.html et utiliser
+le système de routage défini côté client.
 
+symfony/config/packages/nelmio_cors.yaml : donner les autorisations CORS au front déployé sur always data et netlify.
+
+Développement continu : 
+
+git add .
+
+git commit -m "Message de modifications"
+
+git push origin main (repository lié a netlify)
 

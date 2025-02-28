@@ -115,6 +115,14 @@ git branch -d developpement # Suppression locale de la branche de developpement 
 
 git push origin --delete developpement # Suppression de la branche de developpement distante
 
+git fetch origin # Si la branche distante contient des modifications non présentes en local, ce qui empêche de push des modifications locales, récupérer les mises à jour distantes sans les fusionner au local
+
+git log HEAD..origin/main --oneline #Lister les modifications présentes sur la branche distantes et pas présentes en local
+
+git pull origin main --rebase #Appliquer les modifications distantes avant les commits locaux
+
+git push origin main
+
 # Autres configurations
 
 Suppression du bundle JWT après utilisation :

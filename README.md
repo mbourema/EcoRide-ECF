@@ -49,6 +49,10 @@ Ajout des URLs des bases de données MariaDB et MongoDB dans les fichiers .env e
 
 .env.local : Configuration spécifique à l'environnement local (base de données locale, etc.).
 
+php bin/console cache:clear --env=dev #Se mettre en environnement de developpement
+
+php bin/console cache:clear --env=prod #Se mettre en environnement de production
+
 # Gestion des migrations et des schémas de base de données
 
 Réinitialisation et mise à jour des bases de données :

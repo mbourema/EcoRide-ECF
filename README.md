@@ -67,6 +67,12 @@ php bin/console make:migrations # Recréer les migrations
 
 php bin/console doctrine:migrations:migrate  # Exécution des migrations
 
+ou si on ne souhaite pas utiliser makerbundle :
+
+php bin/console doctrine:migrations:diff #Creer les migration
+
+php bin/console doctrine:migrations:migrate #Migrer
+
 php bin/console doctrine:mongodb:schema:update  # Mise à jour du schéma MongoDB
 
 Assure une base propre avant de recréer les entités et migrations.

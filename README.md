@@ -163,6 +163,10 @@ composer require nelmio/cors-bundle  # Installation du bundle CORS
 
 Configuration des règles CORS dans le fichier config/packages/nelmio_cors.yaml.
 
+Installation du composant symfony/mailer pour envoyer des mail aux utilisateur depuis l'API
+
+composer require symfony/mailer
+
 Installation de AWS SDK (Utilisé pour envoyer des photos depuis l'API vers un bucket Amazon S3 mais finalement opté pour l'entrée d'url via les formulaire du front):
 
 npm install aws-sdk  # Installation du SDK AWS côté Node.js

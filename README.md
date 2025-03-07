@@ -265,7 +265,7 @@ le système de routage défini côté client.
 
 symfony/config/packages/nelmio_cors.yaml : donner les autorisations CORS au front déployé sur always data et netlify.
 
-Développement continu : 
+Déploiement continu : 
 
 git add .
 

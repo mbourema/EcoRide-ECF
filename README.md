@@ -3,6 +3,7 @@
 ### FrontEnd de l'application : https://github.com/mbourema/EcoRide-FrontEnd
 
 # Installation et configuration de Symfony
+
 L’installation de Symfony a été réalisée en utilisant Symfony CLI et Composer pour garantir un environnement propre et fonctionnel :
 
 scoop install symfony-cli  # Installation de Symfony CLI
@@ -15,39 +16,29 @@ Symfony CLI simplifie la gestion des projets Symfony.
 
 Vérifier les prérequis système permet d'éviter des erreurs pendant le développement.
 
-Utilisation de Symfony 7.2 pour bénéficier des dernières fonctionnalités et optimisations.
-
 # Installation des dépendances essentielles
+
 Ajout des dépendances nécessaires pour la gestion de la base de données et des entités :
 
 composer require symfony/orm-pack  # Ajout de Doctrine ORM pour gérer MariaDB
 
 composer require --dev symfony/maker-bundle  # Génération rapide des entités et commandes
 
-Doctrine ORM est indispensable pour gérer la base de données relationnelle (MariaDB).
-
-Maker Bundle permet de générer rapidement les entités, contrôleurs et commandes.
-
 # Gestion du dépôt Git et organisation du projet
-Création d’un repository distant pour le projet EcoRide-BackEnd, intégré comme submodule dans un repository parent ECF qui contient les dossiers :
+
+Création d’un repository distant ECF contenant un MCD pour la base de donnée relationnelle, un MPD, les requêtes SQL préalable pour remplir les tables Role et Marque de la base de données, les liens vers l'application déployée et les repository du front end et du back end de l'application :
 
 Front-End (HTML, SCSS, JavaScript)
 
 Back-End (API Symfony)
 
-Pourquoi ce choix ?
-
-Permet une organisation claire entre le front-end et le back-end.
-
-Facilite la gestion des versions séparées tout en maintenant un repository global.
-
 #  Configuration des bases de données
 
 Ajout des URLs des bases de données MariaDB et MongoDB dans les fichiers .env et .env.local.
 
-.env : Paramètres généraux (souvent utilisés en production).
+.env : URLs des bases de données mongodb et mariadb déployées.
 
-.env.local : Configuration spécifique à l'environnement local (base de données locale, etc.).
+.env.local : URLs des bases de données mongodb et mariadb sur le serveur local (apache via XAMPP).
 
 php bin/console cache:clear --env=dev #Se mettre en environnement de developpement
 
@@ -59,7 +50,7 @@ Réinitialisation et mise à jour des bases de données :
 
 del /s /q migrations\*  # Suppression des anciennes migrations
 
-php bin/console doctrine:database:drop --force  # Suppression de la base de données
+php bin/console doctrine:database:drop --force  # Suppression de la base de données (si conflit dans les migrations et données non importantes)
 
 php bin/console doctrine:database:create # Recréation de la base de données
 
@@ -67,39 +58,27 @@ php bin/console make:migrations # Recréer les migrations
 
 php bin/console doctrine:migrations:migrate  # Exécution des migrations
 
-ou si on ne souhaite pas utiliser makerbundle :
+Si on ne souhaite pas utiliser makerbundle remplacer : php bin/console make:migrations par : php bin/console doctrine:migrations:diff #Creer les migration
 
-php bin/console doctrine:migrations:diff #Creer les migration
-
-php bin/console doctrine:migrations:migrate #Migrer
+Puis migrer avec : php bin/console doctrine:migrations:migrate #Migrer
 
 php bin/console doctrine:mongodb:schema:update  # Mise à jour du schéma MongoDB
 
-Assure une base propre avant de recréer les entités et migrations.
-
-Permet de synchroniser les schémas de base de données avec le code.
-
-php bin/console cache:clear # A effectuer après un changement dans les controlleur ou les fichier de config pour être sur d'appliquer le changements à l'API
+php bin/console cache:clear # A effectuer après un changement dans les controlleur ou les fichier de config pour être sur d'appliquer les changements à l'API
 
 # Sécurité et authentification
+
 Ajout du composant Security de Symfony et gestion des rôles utilisateur :
 
 composer require symfony/security-bundle  # Installation du composant de sécurité
 
-composer require lexik/jwt-authentication-bundle  # Gestion des tokens JWT
-
 Security Bundle permet de gérer l’authentification et les permissions pour effectuer des requêtes sur certaines routes (permissions définis dans symfony/config/packages).
 
-JWT (JSON Web Token) est utilisé pour sécuriser les échanges entre le client et l’API.
+Initialisation des rôles dès le démarrage de l’API (grâce à la table roles).
 
-Initialisation des rôles dès le démarrage de l’API (dans la table rols).
+Choix d'utilisation de OAuth pour sécuriser l'accès aux différentes routes de l'API avec un api_token généré dans la table Utilisateur pour chaque utilisateurs à son inscription.
 
-# Gestion des fixtures et données initiales
-Ajout d’orm-fixtures pour générer des données de test :
-
-composer require --dev orm-fixtures  # Installation des fixtures
-
-composer require --dev symfony/test-pack  # Installation des outils de test
+# Tests unitaires
 
 Tests unitaires réalisés :
 
@@ -109,17 +88,13 @@ php bin/phpunit --filter CovoiturageTest
 
 php bin/phpunit --filter AvisTest
 
-Chargement des fixtures dans la base de données :
-
-php bin/console doctrine:fixtures:load
-
 # Gestion du dépôt Git
 
-git checkout main # Une fois les fonctionnalités poussée sur le branches de développement fonctionnelles, se placer dans la branche principale
+git checkout main # Une fois les fonctionnalités poussées sur la branche de développement et fonctionnelles, se placer dans la branche principale
 
 git merge developpement # Fusionner les commits de la branche developpement dans la branche main (localement)
 
-git push origin main # Envoyer les changement dans la branche main distante
+git push origin main # Envoyer les changements dans la branche main distante
 
 git branch -d developpement # Suppression locale de la branche de developpement (si souhaité)
 
@@ -127,7 +102,7 @@ git push origin --delete developpement # Suppression de la branche de developpem
 
 git fetch origin # Si la branche distante contient des modifications non présentes en local, ce qui empêche de push des modifications locales, récupérer les mises à jour distantes sans les fusionner au local
 
-git log HEAD..origin/main --oneline #Lister les modifications présentes sur la branche distantes et pas présentes en local
+git log HEAD..origin/main --oneline #Lister les modifications présentes sur la branche distante et pas présentes en local
 
 git pull origin main --rebase #Appliquer les modifications distantes avant les commits locaux
 
@@ -135,45 +110,43 @@ git push origin main
 
 # Autres configurations
 
-Suppression du bundle JWT après utilisation :
-
-composer remove lexik/jwt-authentication-bundle (choix d'utilisation de OAuth finalement pour sécuriser l'accès aux différentes routes de l'API)
-
-Activation de l'extension ZIP PHP (certaines installations de packages nécessitent que composer utilise l'extension zip) :
+- Activation de l'extension ZIP PHP (certaines installations de packages nécessitent que composer utilise l'extension zip) :
 
 Décommenter l’extension zip dans php.ini
 
 extension=zip 
 
-Utilisation des logiciels pour la conception des interfaces :
+- Utilisation des logiciels pour la conception des interfaces :
 
 Balsamiq pour les wireframes
 
 Figma pour les mockups
 
-Installation de Node.js et de bibliothèques pour le front-end :
+- Installation de Node.js et de bibliothèques pour le front-end :
 
 npm install bootstrap  # Installation de Bootstrap
 
-npm i bootstrap-icons  # Installation des icônes Bootstrap
+npm i bootstrap-icons  # Installation des icônes Bootstrap (finalement obté pour l'utilisation de svg depuis le site bootstrap)
 
-Nouveau serveur pour prendre en charge le routage front end javascript :
+Utilisation de la bibliothèque sweetalert pour des alertes ne nécessitant par d'action de la part de l'utilisateur et plus esthétiques
+
+- Nouveau serveur pour prendre en charge le routage front end javascript :
 
 npm install -g http-server # Installation du server 
 
 http-server -c-1 --gzip --proxy http://localhost:8080?/  # Démarrage du serveur
 
-Installation de CORS pour permette au front end de requeter via notre API Symfony :
+- Installation de CORS pour permette au front end de requeter via notre API Symfony :
 
 composer require nelmio/cors-bundle  # Installation du bundle CORS
 
 Configuration des règles CORS dans le fichier config/packages/nelmio_cors.yaml.
 
-Installation du composant symfony/mailer pour envoyer des mail aux utilisateur depuis l'API
+- Installation du composant symfony/mailer pour envoyer des mails aux utilisateur depuis l'API
 
 composer require symfony/mailer
 
-Installation de AWS SDK (Utilisé pour envoyer des photos depuis l'API vers un bucket Amazon S3 mais finalement opté pour l'entrée d'url via les formulaire du front):
+- Installation de AWS SDK (Utilisé pour envoyer des photos depuis l'API vers un bucket Amazon S3 mais finalement opté pour l'entrée d'url via les formulaire du front):
 
 npm install aws-sdk  # Installation du SDK AWS côté Node.js
 
@@ -181,11 +154,13 @@ composer require aws/aws-sdk-php  # Installation du SDK AWS côté PHP
 
 # Deploiement en local
 
+- Back End : 
+
 L'api est disponible dans le repository mbourema/EcoRide-BackEnd: Back end de l'application web EcoRide.
 
-Il faut disposer d'un serveur comme apache, d'une version de php récente (PHP 8.2.12 a été utilisé), de Symfony CLI (version 5.10.6 utilisée) et d'une base de donnée mysql et mongodb (configurer les url dans .env.local).
+Il faut disposer d'un serveur comme apache, d'une version de php récente (PHP 8.2.12 a été utilisé), de Symfony CLI (version 5.10.6 utilisée) et d'une base de donnée mysql/mariadb et mongodb (configurer les url dans .env.local).
 
-En se rendant dans le dossier symfony, il faut exécuter la commande symfony server:start -d afin de lancer le serveur en arrière plan (terminal toujours utilisable) et la documentation de l'api sera disponible en locale en entrant /api/doc après l'adresse du serveur local dans un navigateur. Les routes sont toutes utilisables et commentée, mais certaines nécessitent une authentification à l'aide de l'api token retrouvé dans la table utilisateur pour un utilisateur ayant un role correspondant (tout les roles sont accessibles lors de la création d'un nouvel utilisateur (voir identifiant dans la table role). Il faut afin de pouvoir utiliser les différentes routes, creer la base de données EcoRide, faire les migrations et exécuter les commande SQL suivantes dans la base de données mySQL :
+En se rendant dans le dossier symfony, il faut exécuter la commande symfony server:start -d afin de lancer le serveur en arrière plan (terminal toujours utilisable) et la documentation de l'api sera disponible en local à l'url : adresse du serveur/api/doc. Les routes sont toutes utilisables et commentées, mais certaines nécessitent une authentification à l'aide de l'api token retrouvé dans la table utilisateur pour un utilisateur ayant un role correspondant (tout les roles sont accessibles lors de la création d'un nouvel utilisateur via l'API (voir identifiant dans la table role). Il faut afin de pouvoir utiliser les différentes routes, creer la base de données EcoRide, faire les migrations et exécuter les commande SQL suivantes dans la base de données mariaDB :
 
 -- Requetes d'insertion pour la table Role
 
@@ -212,7 +187,9 @@ INSERT INTO marque (libelle) VALUES ('Volvo');
 
 Ceci va remplir les tables Marque et Role qui sont essentielles à l'initialisation d'enregistrements dans les autres tables ainsi que pour le fonctionnement du front (formulaires d'inscriptions et d'ajout de voitures).
 
-Le front end est disponible à : mbourema/EcoRide-FrontEnd: Front end de l'application web EcoRide. L'extension Live server de visual studio code ne permet pas de charger le système de routage qu'il comporte. 
+- Front End :
+
+Le front end est disponible à : mbourema/EcoRide-FrontEnd: Front end de l'application web EcoRide. L'extension Live server de visual studio code ne permet pas de charger le système de routage javascript qu'il comporte. 
 
 L'utilisation de : npm install -g http-server permet d'actionner le système de routage en local. Il est nécessaire de réaliser les installations suivantes :
 
@@ -225,6 +202,8 @@ Ensuite ce rendre dans le dossier et entrer la commande http-server -c-1 --gzip 
 Faire attention a renseigner la bonne valeur de d'adresse pour le serveur local qui héberge l'API dans le fichier JS/index.js ! export const apiUrl = {votre adresse de serveur}
 
 # Deploiment en ligne
+
+- Déployer le Back End : 
 
 Installation du CLI heroku.
 
@@ -240,15 +219,15 @@ git push heroku main #Pousser l'application vers l'app heroku
 
 heroku open # visualiser l'appli a l'url générée
 
-heroku addons:create jawsdb:kitefin --app <nom de l'app> #Ajouter l'addons jawsdb pour déployer une base de données mysql
+heroku addons:create jawsdb:kitefin --app <nom de l'app> # Ajouter l'addons jawsdb pour déployer une base de données mysql
 
-heroku config:get JAWSDB_URL --app <nom de l'app> #Recupérer les informations de connection
+heroku config:get JAWSDB_URL --app <nom de l'app> # Recupérer les informations de connection
 
-Ensuite changer la variable DATABASE_URL dans Symfony, dans le fichier .env ou config/packages/doctrine.yaml ou .env.local (selon ou elle est définie)
+Ensuite changer la variable DATABASE_URL dans Symfony, dans le fichier .env ou config/packages/doctrine.yaml 
 
-mysqldump -u root -p ecoride > ecoride.sql #Exporter la base de donnée ecoride mysql en local dans un fichier SQL (changer USE Ecoride; pour USE <nom de la base de données déployée sur Heroku)
+mysqldump -u root -p ecoride > ecoride.sql # Exporter la base de donnée ecoride mysql en local dans un fichier SQL
 
-mysql -h -u -p database < ecoride.sql #Importer le fichier dans la base de donnée mysql déployée sur heroku
+mysql -h (adresse de l'hote de la base de données) -u (utilisateur) -p (mot de passe) database < ecoride.sql # Importer le fichier dans la base de donnée mysql déployée sur heroku
 
 Pour la base de donnée mongodb créer une base MongoDB sur MongoDB Atlas.
 
@@ -256,26 +235,31 @@ Creer un cluster, ajouter un utilisateur et un mot de passe, récupérer l'url d
 
 heroku config:set MONGODB_URI="url avec nom et mot de passe"
 
-Changer les connexions MongoDB dans symfony (config/package/doctrine_mongodb.yaml...)
+Changer les connexions MongoDB dans symfony (config/package/doctrine_mongodb.yaml, .env)
 
 Permettre dans mongo atlas d'autoriser les adresses IP à ce connecter à la base de données
 
-Déployer le front :
+- Déployer le Front End : 
 
-Hébergeur utilisé : Always data avec FileZilla pour le protocole FTP puis Netlify
+Hébergeur utilisé : Netlify
 
 Prérequis : modifier dans le fichier index.js la variable "const apiUrl" selon la nouvelle url de l'API déployée via Heroku.
 
-Configurer le routage du serveur pour utiliser le notre dans l'encadrer "Configuration avancée" lors de la création d'un nouveau site sur AlwaysData :
-RewriteEngine On
-RewriteRule ^/[a-zA-Z0-9]+[/]?$ /index.html [QSA,L]
+Configurer le routage du serveur pour utiliser le notre :
 
-Pour Netlify création d'un fichier dans le front : _redirect, qui contient : /*    /index.html   200, afin de rediriger toutes les pages vers index.html et utiliser
-le système de routage défini côté client.
+Création d'un fichier dans le front : _redirect, qui contient : /*    /index.html   200, afin de rediriger toutes les pages vers index.html et ainsi utiliser le système de routage défini côté client.
 
-symfony/config/packages/nelmio_cors.yaml : donner les autorisations CORS au front déployé sur always data et netlify.
+symfony/config/packages/nelmio_cors.yaml : donner les autorisations CORS au front déployé sur netlify.
 
-Déploiement continu : 
+Déploiement continu du Back End : 
+
+git add .
+
+git commit -m "Message de modifications"
+
+git push heroku main
+
+Déploiement continu du Front End : 
 
 git add .
 

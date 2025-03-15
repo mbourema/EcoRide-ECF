@@ -32,6 +32,24 @@ Front-End (HTML, SCSS, JavaScript)
 
 Back-End (API Symfony)
 
+Se déplacer vers les dossiers contenant les projets :
+
+git init 
+
+git add .
+
+git -m "message commit"
+
+Créer un repository distant sur github et copier son url :
+
+git remote add origin url
+
+git push -u origin main
+
+git branch developpement # Ajouter une branche developpement
+
+git checkout developpement # S'y déplacer
+
 #  Configuration des bases de données
 
 Ajout des URLs des bases de données MariaDB et MongoDB dans les fichiers .env et .env.local.

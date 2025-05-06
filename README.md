@@ -170,6 +170,26 @@ npm install aws-sdk  # Installation du SDK AWS côté Node.js
 
 composer require aws/aws-sdk-php  # Installation du SDK AWS côté PHP
 
+# Conteneurisation avec Docker
+
+- Front End :
+
+Création d'un Dockerfile pour générer une image de l'application, exposer un port HTTP pour la rendre accessible, démarrer et maintenir le conteneur actif, faire appel au serveur http NGINX.
+
+Création fichier nginx.conf pour configurer le serveur nginx (configuration d'un serveur Nginx qui écoute sur le port 80 pour servir les fichiers statiques, utilisation de la compression GZIP pour améliorer les performances, désactivation de la mise en cache pour permettre le développement et rediriger les erreurs 404 vers un fichier spécifique, utilisation d'un fichier de configuration pour déterminer les types MIME et optimiser la gestion des fichiers)
+
+Build de l'image Docker avec la commande : docker build -t nom-projet-frontend .
+
+Lancer un conteneur docker basé sur l'image construite en arrière plan sur le port 8080 (mappé avec le port 80, accessible à l'url http://localhost:8080/) : docker run -d -p 8080:80 --name frontend-container frontend
+
+Lister les conteneurs en cours d'exécution : docker ps
+
+Arrêter le conteneur : docker stop nom-container
+
+Supprimmer le conteneur : docker rm nom-container
+
+- Back End : 
+
 # Deploiement en local
 
 - Back End : 

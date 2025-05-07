@@ -2,7 +2,7 @@
 ### BackEnd de l'application : https://github.com/mbourema/EcoRide-BackEnd
 ### FrontEnd de l'application : https://github.com/mbourema/EcoRide-FrontEnd
 
-# Installation et configuration de Symfony
+## Installation et configuration de Symfony
 
 L’installation de Symfony a été réalisée en utilisant Symfony CLI et Composer pour garantir un environnement propre et fonctionnel :
 
@@ -172,23 +172,83 @@ composer require aws/aws-sdk-php  # Installation du SDK AWS côté PHP
 
 # Conteneurisation avec Docker
 
-- Front End :
+Front End :
 
-Création d'un Dockerfile pour générer une image de l'application, exposer un port HTTP pour la rendre accessible, démarrer et maintenir le conteneur actif, faire appel au serveur http NGINX.
+Configuration du projet front-end pour être exécuté dans un conteneur Docker avec NGINX comme serveur HTTP :
 
-Création fichier nginx.conf pour configurer le serveur nginx (configuration d'un serveur Nginx qui écoute sur le port 80 pour servir les fichiers statiques, utilisation de la compression GZIP pour améliorer les performances, désactivation de la mise en cache pour permettre le développement et rediriger les erreurs 404 vers un fichier spécifique, utilisation d'un fichier de configuration pour déterminer les types MIME et optimiser la gestion des fichiers)
+Création d’un Dockerfile pour générer une image Docker de l’application, incluant :
 
-Build de l'image Docker avec la commande : docker build -t nom-projet-frontend .
+Utilisation de l’image nginx:stable-alpine légère pour des performances optimales
 
-Lancer un conteneur docker basé sur l'image construite en arrière plan sur le port 8080 (mappé avec le port 80, accessible à l'url http://localhost:8080/) : docker run -d -p 8080:80 --name frontend-container frontend
+Copie d’un fichier nginx.conf personnalisé vers /etc/nginx/nginx.conf (optionnel, permet une configuration fine du serveur)
 
-Lister les conteneurs en cours d'exécution : docker ps
+Copie des fichiers statiques de l’application (HTML, CSS, JS compilés) vers /usr/share/nginx/html
 
-Arrêter le conteneur : docker stop nom-container
+Exposition du port HTTP 80
 
-Supprimmer le conteneur : docker rm nom-container
+Démarrage de NGINX en mode premier-plan avec la commande CMD ["nginx", "-g", "daemon off;"] pour garder le conteneur actif
 
-Nettoyer les volumes : docker-compose down -v 
+Exemple de contenu du fichier Dockerfile :
+
+FROM nginx:stable-alpine
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+COPY . /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+Création d’un fichier nginx.conf pour configurer le serveur NGINX :
+
+Configuration du serveur web pour écouter sur le port 80
+
+Définition du répertoire racine /usr/share/nginx/html pour les fichiers statiques
+
+Déclaration d’un fichier index.html comme page d’accueil par défaut
+
+Redirection des erreurs 404 vers /Pages/connectezvous.html
+
+Activation de la compression GZIP pour améliorer les performances (types MIME courants : CSS, JS, JSON, XML...)
+
+Désactivation du cache navigateur (headers Cache-Control, Pragma, Expires) pour faciliter le développement
+
+Utilisation de try_files $uri /index.html; pour supporter les SPA avec routage côté client
+
+Exemple de structure du fichier nginx.conf :
+
+Bloc http incluant les types MIME (include /etc/nginx/mime.types)
+
+Directive sendfile on pour une meilleure performance de transfert de fichiers
+
+Bloc server écoutant sur le port 80
+
+root /usr/share/nginx/html et index index.html
+
+Bloc location / avec désactivation du cache et fallback sur index.html
+
+Bloc error_page 404 redirigeant vers une page personnalisée
+
+Commandes utiles pour l’utilisation et la gestion de l’image front-end :
+
+Build de l’image Docker à partir du Dockerfile :
+docker build -t nom-projet-frontend .
+
+Démarrage d’un conteneur Docker basé sur cette image en arrière-plan, avec le port 8080 mappé au port 80 du conteneur (accès via http://localhost:8080) :
+docker run -d -p 8080:80 --name frontend-container frontend
+
+Lister les conteneurs Docker en cours d’exécution :
+docker ps
+
+Arrêter un conteneur :
+docker stop nom-container
+
+Supprimer un conteneur :
+docker rm nom-container
+
+Nettoyer les volumes Docker (utile pour supprimer les données persistantes associées) :
+docker-compose down -v
 
 - Back End :
 
@@ -242,38 +302,28 @@ Nettoyer les volumes : docker-compose down -v
     - Logs configurés (access_log, error_log)
 
   Commandes utiles pendant le développement :
-    Lancer l’ensemble des services :
-    docker compose up -d
+  
+    - Lancer l’ensemble des services : docker compose up -d
     
-    Forcer le rebuild complet (en cas de modifs du Dockerfile) :
-    docker compose up -d --build
+    - Forcer le rebuild complet (en cas de modifs du Dockerfile) : docker compose up -d --build
     
-    Redémarrer un service :
-    docker compose restart php
+    - Redémarrer un service : docker compose restart php
     
-    Accéder au conteneur PHP :
-    docker exec -it symfony-php-1 sh
+    - Accéder au conteneur PHP : docker exec -it symfony-php-1 sh
     
-    Mettre à jour le schéma de la base MySQL :
-    docker exec -it symfony-php-1 sh -c "php bin/console doctrine:schema:update --force"
+    - Mettre à jour le schéma de la base MySQL : docker exec -it symfony-php-1 sh -c "php bin/console doctrine:schema:update --force"
     
-    Se connecter à Mongo en ligne de commande :
-    docker exec -it symfony-mongodb-1 mongosh --username root --password example --authenticationDatabase admin --eval "db.stats()"
+    - Se connecter à Mongo en ligne de commande : docker exec -it symfony-mongodb-1 mongosh --username root --password example --authenticationDatabase admin --eval "db.stats()"
     
-    Se connecter à MariaDB depuis PHP :
-    mariadb --ssl=0 -h database -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}
+    - Se connecter à MariaDB depuis PHP : mariadb --ssl=0 -h database -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}
 
-    Afficher les logs PHP :
-    docker compose logs -f php
+    - Afficher les logs PHP : docker compose logs -f php
     
-    Supprimer tous les volumes (utile si reset complet des DBs) :
-    docker compose down -v
+    - Supprimer tous les volumes (utile si reset complet des DBs) : docker compose down -v
     
-    Recompiler les variables d’environnement Symfony :
-    composer dump-env prod
+    - Recompiler les variables d’environnement Symfony : composer dump-env prod
     
-    Vérifier les variables d’environnement chargées :
-    docker exec -it symfony-php-1 sh -c "printenv | grep DATABASE_URL && printenv | grep MYSQL_"
+    - Vérifier les variables d’environnement chargées : docker exec -it symfony-php-1 sh -c "printenv | grep DATABASE_URL && printenv | grep MYSQL_"
 
 
 # Deploiement en local

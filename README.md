@@ -188,7 +188,15 @@ Arrêter le conteneur : docker stop nom-container
 
 Supprimmer le conteneur : docker rm nom-container
 
-- Back End : 
+Nettoyer les volumes : docker-compose down -v 
+
+- Back End :
+
+Ecrire des commande depuis un conteneur : docker exec -it <nom-du-conteneur> sh
+
+docker exec -it <nom_du_container_database> sh
+printenv | grep MY
+SQL
 
 # Deploiement en local
 

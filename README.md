@@ -244,6 +244,8 @@ Configuration du projet front-end pour être exécuté dans un conteneur Docker 
 
     - Nettoyer les volumes Docker (utile pour supprimer les données persistantes associées) : docker-compose down -v
 
+    - Supprimer toutes les images Docker via PowerShell : docker rmi -f $(docker images -q)
+
 Exportation de l'image du front sur Docker Hub et téléchargement de celle-ci (sur un autre PC) :
 
     - docker tag nom_image_locale dockerhub_username/nom_image:tag : Donner un nom tagué à l'image Docker

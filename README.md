@@ -333,6 +333,8 @@ Configuration du projet Symfony pour fonctionner avec MariaDB et MongoDB dans un
         
         - Vérifier les variables d’environnement chargées : docker exec -it symfony-php-1 sh -c "printenv | grep DATABASE_URL && printenv | grep MYSQL_"
 
+        - Build l'image et run le conteneurs : docker-compose up --build -d
+
 
 # Deploiement en local
 

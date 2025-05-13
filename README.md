@@ -244,6 +244,15 @@ Configuration du projet front-end pour être exécuté dans un conteneur Docker 
 
     - Nettoyer les volumes Docker (utile pour supprimer les données persistantes associées) : docker-compose down -v
 
+Exportation de l'image du front sur Docker Hub et téléchargement de celle-ci (sur un autre PC) :
+
+    - docker tag nom_image_locale dockerhub_username/nom_image:tag : Donner un nom tagué à l'image Docker
+
+    - docker push dockerhub_username/nom_image:tag : Pousser l'image sur Docker Hub
+
+    - docker pull dockerhub_username/nom_image:tag : Sur un autre PC (dans lequel on Docker Desktop est installé et ou on est connecté sur Docker Hub), téléchargement de l'image Docker
+    
+
 ## Back End :
 
 Configuration du projet Symfony pour fonctionner avec MariaDB et MongoDB dans un environnement Docker :
@@ -253,49 +262,73 @@ Configuration du projet Symfony pour fonctionner avec MariaDB et MongoDB dans un
   Ceci permet de créer un fichier .env à la racine du projet dédié à Docker, contenant :
   
     - Les identifiants de MariaDB
+    
     - Les identifiants de MongoDB
     
   Ajout des variables nécessaires dans .env.symfony pour configurer Symfony :
     
     - DATABASE_URL pour MariaDB avec la bonne version serveur, charset, et désactivation du SSL
+    
     - MONGODB_URL et MONGODB_DB pour ODM MongoDB
+    
     - Configuration des bundles lock, cors, etc.
 
   Création d’un fichier compose.yaml définissant l’architecture multi-conteneurs suivante :
         
     - database : image mariadb:10.4.32, avec healthcheck, port local exposé sur 3307
+    
     - mongodb : image mongo:6.0, root user/pass init, healthcheck avec mongosh
+    
     - php : construit via un Dockerfile PHP 8.2-FPM-Alpine avec extensions nécessaires (pdo_mysql, mongodb, gd, etc.), Composer, montage du code source Symfony
+    
     - nginx : image nginx:stable-alpine, configuré pour pointer sur public/ via le fichier nginx.conf
 
   Contenu du Dockerfile pour le service PHP :
   
     - Ajout de toutes les extensions nécessaires à Symfony, MySQL, MongoDB, GD, etc.
+    
     - Installation de Composer
+    
     - Suppression du MakerBundle et installation des dépendances Symfony optimisées (--no-dev, --optimize-autoloader)
+    
     - Définition de APP_ENV=prod et APP_DEBUG=0
+    
     - Port FPM exposé à 9000
 
   Fichier nginx.conf, serveur écoutant sur le port 80 avec :
   
     - Serveur web statique pointant sur /var/www/public  
+    
     - Redirection des routes Symfony vers index.php
+    
     - Bloc pour interpréter les fichiers .php avec FastCGI
+    
     - Passage des variables APP_ENV et APP_DEBUG à PHP
+    
     - Logs configurés (access_log, error_log)
 
   Commandes utiles pendant le développement :
   
         - Lancer l’ensemble des services : docker compose up -d
+        
         - Forcer le rebuild complet (en cas de modifs du Dockerfile) : docker compose up -d --build
+        
         - Redémarrer un service : docker compose restart php
+        
         - Accéder au conteneur PHP : docker exec -it symfony-php-1 sh
+        
         - Mettre à jour le schéma de la base MySQL : docker exec -it symfony-php-1 sh -c "php bin/console doctrine:schema:update --force"
+        
         - Se connecter à Mongo en ligne de commande : docker exec -it symfony-mongodb-1 mongosh --username root --password example --authenticationDatabase admin --eval "db.stats()"
+        
         - Se connecter à MariaDB depuis PHP : mariadb --ssl=0 -h database -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}
+        
         - Afficher les logs PHP : docker compose logs -f php  
+        
         - Supprimer tous les volumes (utile si reset complet des DBs) : docker compose down -v
+        
         - Recompiler les variables d’environnement Symfony : composer dump-env prod
+        
         - Vérifier les variables d’environnement chargées : docker exec -it symfony-php-1 sh -c "printenv | grep DATABASE_URL && printenv | grep MYSQL_"
 
 

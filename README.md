@@ -50,6 +50,24 @@ git branch developpement # Ajouter une branche developpement
 
 git checkout developpement # S'y déplacer
 
+git checkout main # Une fois les fonctionnalités poussées sur la branche de développement et fonctionnelles, se placer dans la branche principale
+
+git merge developpement # Fusionner les commits de la branche developpement dans la branche main (localement)
+
+git push origin main # Envoyer les changements dans la branche main distante
+
+git branch -d developpement # Suppression locale de la branche de developpement (si souhaité)
+
+git push origin --delete developpement # Suppression de la branche de developpement distante
+
+git fetch origin # Si la branche distante contient des modifications non présentes en local, ce qui empêche de push des modifications locales, récupérer les mises à jour distantes sans les fusionner au local
+
+git log HEAD..origin/main --oneline #Lister les modifications présentes sur la branche distante et pas présentes en local
+
+git pull origin main --rebase #Appliquer les modifications distantes avant les commits locaux
+
+git push origin main
+
 #  Configuration des bases de données
 
 Ajout des URLs des bases de données MariaDB et MongoDB dans les fichiers .env et .env.local.
@@ -105,26 +123,6 @@ php bin/phpunit --filter UtilisateurTest
 php bin/phpunit --filter CovoiturageTest
 
 php bin/phpunit --filter AvisTest
-
-# Gestion du dépôt Git
-
-git checkout main # Une fois les fonctionnalités poussées sur la branche de développement et fonctionnelles, se placer dans la branche principale
-
-git merge developpement # Fusionner les commits de la branche developpement dans la branche main (localement)
-
-git push origin main # Envoyer les changements dans la branche main distante
-
-git branch -d developpement # Suppression locale de la branche de developpement (si souhaité)
-
-git push origin --delete developpement # Suppression de la branche de developpement distante
-
-git fetch origin # Si la branche distante contient des modifications non présentes en local, ce qui empêche de push des modifications locales, récupérer les mises à jour distantes sans les fusionner au local
-
-git log HEAD..origin/main --oneline #Lister les modifications présentes sur la branche distante et pas présentes en local
-
-git pull origin main --rebase #Appliquer les modifications distantes avant les commits locaux
-
-git push origin main
 
 # Autres configurations
 
